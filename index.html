@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Vivoauthimap by vmuthal</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Vivoauthimap</h1>
+        <h2>VivOAuthIMAP is a library to support OAuth for IMAP. </h2>
+
+        <section id="downloads">
+          <a href="https://github.com/vmuthal/VivOAuthIMAP/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/vmuthal/VivOAuthIMAP/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/vmuthal/VivOAuthIMAP" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a name="vivoauthimap" class="anchor" href="#vivoauthimap"><span class="octicon octicon-link"></span></a>VivOAuthIMAP</h1>
+
+<h4>
+<a name="version-10" class="anchor" href="#version-10"><span class="octicon octicon-link"></span></a>Version: 1.0</h4>
+
+<h2>
+<a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h2>
+
+<p>VivOAuthIMAP is a library to support OAuth for IMAP.<br>
+PHP's default library imap_open doesn't have support for OAuth.<br>
+So a quiick solution will be this library.  </p>
+
+<h3>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h3>
+
+<ul>
+<li>Connect to IMAP using OAuth</li>
+<li>Count Total Mails</li>
+<li>Fetch Mails Headers</li>
+<li>Fetch Mails Body</li>
+<li>List folders of mailbox</li>
+<li>Swtich to folders easily</li>
+</ul><h3>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h3>
+
+<pre><code>$imap = new VivOAuthIMAP();
+
+$imap-&gt;host = 'ssl://imap.gmail.com';
+$imap-&gt;port = 993;
+
+//Using Username And Password
+$imap-&gt;username = 'changeMe@gmail.com';
+$imap-&gt;password = 'changeMe';
+//Or you can use access token
+//$imap-&gt;accessToken = 'tokenreceivedbyoauthlibrary'
+
+if ($imap-&gt;login()) {       
+
+    /*
+    $header = $imap-&gt;getHeader(1); //Returns mail header array
+
+    $mails = $imap-&gt;getMessage(1); //Returns mails array
+
+    $headers = $imap-&gt;getHeaders(1,10); //Returns mail headers array
+
+    $mails = $imap-&gt;getMessage(2); //Returns mails array
+
+    $total = $imap-&gt;totalMails(); //By default inbox is selected
+
+    $total = $imap-&gt;totalMails('Folder Name'); //Any folder which exist can be passed as folder name
+
+    $folders = $imap-&gt;listFolders(); //Lists all folders of mailbox
+
+    $imap-&gt;selectFolder('Folder Name'); // Default is INBOX autoselected after login
+    */
+    $mails = $imap-&gt;getMessages(1, 20);
+
+    foreach ($mails as $mail) {
+
+        //Using mime_parser you can parse the rfc822 format mail or can write own parser
+        //Here in example used a mime_parser_class 
+
+        $mime = new mime_parser_class();
+        $parameters = array('Data' =&gt; $mail);
+        $mime-&gt;Decode($parameters, $decoded);
+
+        /*
+          //See how much variables you can access
+          echo "&lt;pre&gt;";
+          print_r($decoded);
+          echo "&lt;/pre&gt;";
+         */
+
+        echo "&lt;b&gt;From :&lt;/b&gt; " . $decoded[0]['ExtractedAddresses']['from:'][0]['address'] . "   ";
+        echo "&lt;b&gt;Subject :&lt;/b&gt; " . $decoded[0]['Headers']['subject:'] . "&lt;br&gt;";
+        echo "======================================================== &lt;br&gt;";
+    }
+
+}
+</code></pre>
+
+<h2>
+<a name="requirement" class="anchor" href="#requirement"><span class="octicon octicon-link"></span></a>Requirement</h2>
+
+<ul>
+<li>PHP Version &gt; PHP 5.3+</li>
+<li>PHP Extensions needs to enable 
+
+<ul>
+<li>php_openssl</li>
+<li>php_curl</li>
+<li>php_sockets</li>
+</ul>
+</li>
+</ul><h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<hr><p>The MIT License (MIT)</p>
+
+<p>Copyright (c) 2013 Vivek Muthal</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</p>
+
+<p>Author : Vivek Muthal<br>
+Email : <a href="mailto:vmuthal.18@gmail.com">vmuthal.18@gmail.com</a><br>
+Website : <a href="http://www.vivsoftware.in">www.vivsoftware.in</a></p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
