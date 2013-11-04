@@ -212,7 +212,7 @@ class VivOAuthIMAP {
      * @return boolean
      */
     public function selectFolder($folder) {
-        $this->writeCommannd("A" . $this->codeCounter, "EXAMINE $folder");
+        $this->writeCommannd("A" . $this->codeCounter, "EXAMINE \"$folder\"");
         $response = $this->readResponse("A" . $this->codeCounter);
         if ($response[0][0] == "OK") {
             return true;
