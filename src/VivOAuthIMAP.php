@@ -2,14 +2,14 @@
 
 /**
  * Description of VIVOAuthIMAP
- * This is a Library to Support OAuth in IMAP 
+ * This is a Library to Support OAuth in IMAP
  * This is designed to work with Gmail
  * @author Vivek
  */
 class VivOAuthIMAP {
 
     /**
-     * @var string $host 
+     * @var string $host
      */
     public $host;
 
@@ -24,7 +24,7 @@ class VivOAuthIMAP {
     public $username;
 
     /**
-     * @var string $password 
+     * @var string $password
      */
     public $password;
 
@@ -51,7 +51,7 @@ class VivOAuthIMAP {
     private $isLoggedIn = false;
 
     /**
-     * Connects to Host if successful returns true else false 
+     * Connects to Host if successful returns true else false
      * @return boolean
      */
     private function connect() {
@@ -233,6 +233,59 @@ class VivOAuthIMAP {
     }
 
     /**
+    * The APPEND command appends the literal argument as a new message
+    *  to the end of the specified destination mailbox
+    *
+    * @param string $mailbox MANDATORY
+    * @param string $message MANDATORY
+    * @param string $flags OPTIONAL DEFAULT "(\Seen)"
+    * @param string $from OPTIONAL
+    * @param string $to OPTIONAL
+    * @param string $subject OPTIONAL
+    * @param string $messageId OPTIONAL DEFAULT uniqid()
+    * @param string $mimeVersion OPTIONAL DEFAULT "1.0"
+    * @param string $contentType OPTIONAL DEFAULT "TEXT/PLAIN;CHARSET=UTF-8"
+    *
+    * @return bool false if mandatory params are not set or empty or if command execution fails, otherwise true
+    */
+    public function appendMessage($mailbox, $message, $from = "", $to = "", $subject = "", $messageId = "", $mimeVersion = "", $contentType = "", $flags = "(\Seen)")
+    {
+        if (!isset($mailbox) || !strlen($mailbox)) return false;
+        if (!isset($message) || !strlen($message)) return false;
+        if (!strlen($flags)) return false;
+
+        $date = date('d-M-Y H:i:s O');
+        $crlf = "\r\n";
+
+        if (strlen($from)) $from = "From: $from";
+        if (strlen($to)) $to = "To: $to";
+        if (strlen($subject)) $subject = "Subject: $subject";
+        $messageId = (strlen($messageId)) ? "Message-Id: $messageId" : "Message-Id: " . uniqid();
+        $mimeVersion = (strlen($mimeVersion)) ? "MIME-Version: $mimeVersion" : "MIME-Version: 1.0";
+        $contentType = (strlen($contentType)) ? "Content-Type: $contentType" : "Content-Type: TEXT/PLAIN;CHARSET=UTF-8";
+
+        $composedMessage = $date . $crlf;
+        if (strlen($from)) $composedMessage .= $from . $crlf;
+        if (strlen($subject)) $composedMessage .= $subject . $crlf;
+        if (strlen($to)) $composedMessage .= $to . $crlf;
+        $composedMessage .= $messageId . $crlf;
+        $composedMessage .= $mimeVersion . $crlf;
+        $composedMessage .= $contentType . $crlf . $crlf;
+        $composedMessage .= $message . $crlf;
+
+        $size = strlen($composedMessage);
+
+        $command = "APPEND \"$mailbox\" $flags {" . $size . "}" . $crlf . $composedMessage;
+
+        $this->writeCommannd("A" . $this->codeCounter, $command);
+        $response = $this->readResponse("A" . $this->codeCounter);
+
+        if ($response[0][0] == "OK") return true;
+
+        return false;
+    }
+
+    /**
      * Write's to file pointer
      * @param string $code
      * @param string $command
@@ -280,7 +333,7 @@ class VivOAuthIMAP {
     }
 
     /**
-     * If response is OK then removes server response status messages else returns the original response 
+     * If response is OK then removes server response status messages else returns the original response
      * @param Array $response
      * @return Array
      */
