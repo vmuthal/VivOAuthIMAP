@@ -13,7 +13,8 @@ So a quiick solution will be this library.
   * Fetch Mails Headers
   * Fetch Mails Body
   * List folders of mailbox
-  * Swtich to folders easily
+  * Switch to folders easily
+  * Append Message 
 
 ###Usage
 
