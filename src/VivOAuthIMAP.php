@@ -171,6 +171,24 @@ class VivOAuthIMAP {
     }
 
     /**
+	* Search in FROM ie. Email Address
+	* @param string $email
+	* @return Array
+	*/
+	public function searchFrom($email) {
+		$this->writeCommannd("A" . $this->codeCounter, "SEARCH FROM \"$email\"");
+		$response = $this->readResponse("A" . $this->codeCounter);		
+		//Fetch by ids got in response
+		$ids = explode(" ", trim($response[0][1]));		
+		unset($ids[0]);
+		unset($ids[1]);		
+		$ids = array_values($ids);
+		$stringIds = implode(",",$ids);		
+		$mails = $this->getMessage($stringIds);			
+		return $mails;
+	}
+	
+    /**
      * Selects inbox for further operations
      */
     private function selectInbox() {
